@@ -194,7 +194,7 @@
         <p>Post what you need for Shrishti, Tinkering Lab, or course projects. Seniors across Bhawans with idle Arduinos, STM32s, sensors, and Raspberry Pis claim your request, lend or rent them out, and help you debug.</p>
         <div class="actions">
           <a class="btn" href="#/register">Join with your @iitr.ac.in email</a>
-          <a class="btn secondary" href="#/login">Sign in / Demo Login</a>
+          <a class="btn secondary" href="#/login">Sign in</a>
         </div>
       </section>
       ${s ? `<div class="stats">
