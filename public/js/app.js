@@ -835,14 +835,7 @@
           ? 'Sign up with your official IIT Roorkee email (@iitr.ac.in or @branch.iitr.ac.in).'
           : 'Sign in with your IIT Roorkee account to browse the feed.'}</p>
 
-        ${!reg ? `
-          <div class="demo-box">
-            <strong>Quick 1-Click Demo Logins (IIT Roorkee):</strong>
-            <div class="actions" style="margin-top:6px">
-              <button type="button" class="btn sm" data-demo="riya@ece.iitr.ac.in">Login as Junior (Riya &middot; ECE Y1)</button>
-              <button type="button" class="btn secondary sm" data-demo="karan@ece.iitr.ac.in">Login as Senior (Karan &middot; ECE Y4)</button>
-            </div>
-          </div>` : ''}
+        
 
         <form class="card" id="authForm">
           ${reg ? `
