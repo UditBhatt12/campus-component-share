@@ -1,47 +1,134 @@
-# IIT Roorkee — Campus Component Share
+# ⚡ IITR Campus Component Share
 
-A peer-to-peer hardware lending & mentoring portal for **IIT Roorkee** where juniors request hardware components (Arduino boards, STM32s, sensors, Raspberry Pis, logic analyzers) and seniors across Bhawans claim those requests, lend or rent them out, list their idle inventory, and mentor along the way.
+A peer-to-peer hardware and electronic component sharing platform built for the **IIT Roorkee** campus community. Students can list spare electronic components (microcontrollers, sensors, ICs, tools), browse available inventory across hostels and departments, request components for lab projects or hackathons, and track checkouts and returns seamlessly.
 
-**Stack:** Node.js, Express 5, MongoDB Atlas (`mongoose`) with automatic local JSON document store fallback (`data/campus-db.json`), JWT authentication, IIT Roorkee email domain enforcement (`@iitr.ac.in` / `@*.iitr.ac.in`), vanilla JS single-page frontend.
+---
 
-## Quick Start
+## 🌐 Live Deployments
 
-```bash
-npm install
-npm run seed    # seeds IIT Roorkee demo users, requests, checkouts, and catalog
-npm start       # http://localhost:3000
+* **Primary Production (Vercel):** [https://campus-component-share.vercel.app/](https://campus-component-share.vercel.app/)
+* **Secondary Mirror (Render):** [https://campus-component-share.onrender.com](https://campus-component-share.onrender.com)
+
+*(Note: Both deployments are connected to the same live MongoDB Atlas cluster in real time. Render's free tier may take ~30 seconds to wake up on the first request after inactivity, whereas Vercel loads instantaneously.)*
+
+---
+
+## ✨ Key Features
+
+* **IIT Roorkee Email Verification:** Restricted sign-up and authentication for verified `@iitr.ac.in` and `@*.iitr.ac.in` campus email addresses.
+* **Component Inventory Feed:** Search and filter available hardware components by category, condition, availability, and owner.
+* **Peer-to-Peer Requests:** Post urgent requests for missing components needed for coursework, Tinkerers' Lab projects, or competitions.
+* **Checkout & Return Tracking:** Manage lending states, borrower approvals, and return confirmations between juniors and seniors.
+* **Real-Time Notifications & Campus Stats:** Track active listings, fulfilled requests, and user notifications.
+* **Dual-Storage Resilience:** Powered by **MongoDB Atlas** (`mongoose`) in production with automatic local JSON fallback (`data/campus-db.json`) for offline local development.
+
+---
+
+## 🛠️ Tech Stack
+
+* **Frontend:** Vanilla JavaScript (SPA Hash Router), HTML5, Modern CSS3
+* **Backend:** Node.js, Express.js (`server.js`)
+* **Database:** MongoDB Atlas & Mongoose ODM (`db.js`, `models/schemas.js`)
+* **Security & Auth:** JWT (`jsonwebtoken`), Password Hashing (`bcryptjs`), Rate Limiting (`express-rate-limit`), HTTP Headers (`helmet`), CORS
+* **Deployment:** Vercel (Serverless + CDN) & Render (Continuous Web Service)
+
+---
+
+## 📂 Project Structure
+
+```text
+campus-component-share/
+├── data/
+│   └── campus-db.json       # Local fallback / seed data
+├── middleware/
+│   └── auth.js              # JWT authentication middleware
+├── models/
+│   └── schemas.js           # Mongoose schemas (User, Inventory, Request, Checkout, Notification)
+├── public/
+│   ├── css/style.css        # Application styling
+│   ├── js/app.js            # Frontend SPA logic & API client
+│   └── index.html           # Entry HTML shell
+├── routes/
+│   ├── auth.js              # Register, login, profile endpoints
+│   ├── inventory.js         # Component CRUD endpoints
+│   ├── requests.js          # Component request endpoints
+│   ├── checkouts.js         # Lending & return lifecycle endpoints
+│   ├── notifications.js     # User notification endpoints
+│   └── stats.js             # Platform-wide statistics
+├── scripts/
+│   └── seed.js              # Database seeding script
+├── tests/
+│   └── smoke.js             # Automated smoke tests
+├── utils/
+│   ├── crypto-auth.js       # Password hashing & token utilities
+│   ├── mini-app.js          # Express app helpers
+│   └── validate.js          # Input sanitization & IITR email validation
+├── config.js                # Environment & app configuration
+├── db.js                    # MongoDB Atlas connection & fallback manager
+├── server.js                # Main Express server entry point
+├── vercel.json              # Vercel serverless routing configuration
+└── package.json             # Dependencies & npm scripts
 ```
 
-`
+---
 
-**To connect directly to your MongoDB Atlas `Cluster0`:**
-1. In your MongoDB Atlas dashboard, click **Connect** on `Cluster0` &rarr; **Drivers**.
-2. Copy your exact cluster hostname (it looks like `cluster0.xxxxx.mongodb.net`) and replace `cluster0.n8svkhd.mongodb.net` in `.env` (`MONGO_CLUSTER` and `MONGODB_URI`).
-3. Under **Network Access** in MongoDB Atlas, make sure your IP (or `0.0.0.0/0` for development) is allowed.
-4. Even if MongoDB Atlas is offline or unreachable, `DB_AUTO_FALLBACK=true` ensures the server starts immediately using `data/campus-db.json` with pre-seeded IIT Roorkee data so the site never crashes.
+## 🚀 Running Locally
 
-## Demo Accounts (Password: `demo1234`)
+### 1. Clone the Repository
+```bash
+git clone https://github.com/UditBhatt12/campus-component-share.git
+cd campus-component-share
+```
 
-| Role   | Email                   | Bhawan                      |
-|--------|-------------------------|-----------------------------|
-| Junior | `riya@ece.iitr.ac.in`   | Kasturba Bhawan, B-214      |
-| Junior | `aman@cs.iitr.ac.in`    | Cautley Bhawan, G-118       |
-| Junior | `junior@iitr.ac.in`     | Govind Bhawan, C-102        |
-| Senior | `karan@ece.iitr.ac.in`  | Rajendra Bhawan, F-305      |
-| Senior | `neha@ee.iitr.ac.in`    | Sarojini Bhawan, A-410      |
-| Senior | `senior@iitr.ac.in`     | Radhakrishnan Bhawan, D-208 |
+### 2. Install Dependencies
+```bash
+npm install
+```
 
-## Key Features
+### 3. Configure Environment Variables
+Create a `.env` file in the root directory (you can copy `.env.example`):
+```bash
+cp .env.example .env
+```
+Update `.env` with your credentials:
+```env
+PORT=3000
+MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/campus_component_share?retryWrites=true&w=majority
+JWT_SECRET=your_super_secret_jwt_key
+NODE_ENV=development
+```
 
-- **IIT Roorkee Email Restriction**: Only `@iitr.ac.in` and departmental subdomains (`@ece.iitr.ac.in`, `@cs.iitr.ac.in`, `@ee.iitr.ac.in`, etc.) can register.
-- **Full Request Lifecycle**: `open` &rarr; `claimed` &rarr; `checked_out` &rarr; `borrower_confirmed` &rarr; `returned` (plus `unclaim` and `cancel`).
-- **Senior Available Parts Catalog**: Seniors can list idle components (`/api/inventory`), and juniors can click **Request this part** to auto-fill a borrow request.
-- **Technical Q&A Comments**: Built-in discussion thread on every request (`/api/requests/:id/comments`).
-- **Activity Notifications & Reputation Karma**: Automatic alerts (`/api/notifications`) and senior karma points on listings, handovers, and returns.
+### 4. Start the Server
+```bash
+npm start
+```
+The application will be live at **`http://localhost:3000`**.
 
-## Automated Tests
-
+### 5. Run Tests (Optional)
 ```bash
 npm test
 ```
-Runs the end-to-end test suite (`tests/smoke.js`) verifying campus email validation, auth, inventory catalog, request lifecycle, handover receipt confirmation, comments, notifications, and public stats.
+
+---
+
+## 🔌 API Overview
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `POST` | `/api/auth/register` | Register a new IITR student account |
+| `POST` | `/api/auth/login` | Authenticate and receive a JWT |
+| `GET` | `/api/inventory` | List all available components |
+| `POST` | `/api/inventory` | Add a new component to share |
+| `GET` | `/api/requests` | View open component requests |
+| `POST` | `/api/requests` | Create a new component request |
+| `GET` | `/api/checkouts` | List active and past component checkouts |
+| `POST` | `/api/checkouts` | Initiate or update a component checkout |
+| `GET` | `/api/notifications` | Fetch user notifications |
+| `GET` | `/api/stats` | Get platform summary metrics |
+
+---
+
+## ☁️ Deployment Notes
+
+* **Vercel:** Configured via `vercel.json` and exports the Express app in `server.js`. Automatically deploys on every `git push` to the `main` branch.
+* **Render:** Configured as a Node Web Service (`Build Command: npm install`, `Start Command: node server.js`). Automatically deploys on every `git push` to the `main` branch.
