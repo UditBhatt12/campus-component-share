@@ -445,6 +445,30 @@ const requests = {
       store.requests.push(raw);
       saveStore();
     }
+
+    // Notify the senior who listed this item in the Parts Catalog
+    if (data.inventory_id) {
+      let invItem = null;
+      if (mode === 'mongodb') {
+        if (mongoose.Types.ObjectId.isValid(data.inventory_id)) {
+          invItem = normalizeDoc(await models.Inventory.findById(data.inventory_id));
+        }
+      } else {
+        invItem = normalizeDoc(
+          store.inventory.find((i) => String(i.id) === String(data.inventory_id))
+        );
+      }
+
+      const normReq = normalizeDoc(raw);
+      if (invItem && invItem.senior_id && String(invItem.senior_id) !== String(viewer.id)) {
+        await notifications.create(
+          invItem.senior_id,
+          `${viewer.name} requested your catalog item "${invItem.component}" (${data.quantity}x) — click to review & claim.`,
+          `#/request/${normReq.id}`
+        );
+      }
+    }
+
     return hydrateRequest(raw, viewer);
   },
 
